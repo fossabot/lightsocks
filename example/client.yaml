@@ -1,0 +1,39 @@
+# 本地监听
+Local:
+  Host: 0.0.0.0
+  Port: 1080
+# 远端服务器
+Server:
+  Host: 127.0.0.1
+  Port: 8443
+  # 服务端的TOKEN
+  Token: { your_token }
+# RESTful API
+Api:
+  Host: 127.0.0.1
+  Port: 8080
+  # RESTful API auth
+  #Token: { your_token }
+# 证书
+#TLS:
+#  Enable: true
+#  Key: /your/path/ssl.key
+#  Cert: /your/path/ssl.cert
+# 连接超时时间
+Timeout: 15s
+# 服务端或客户端入口ip白名单
+#CIDR:
+#  - 0.0.0.0/0
+# 客户端的sock(s)/http认证
+#Users:
+#  - UserName: admin
+#    Password: 123456
+#    CIDR:
+#      - 0.0.0.0/0
+Log:
+  Level: info
+  Filename: logs/lightsocks.log
+  MaxBackups: 7
+  MaxSize: 50   # megabytes
+  MaxAge: 7     # days
+  Compress: true # compress log
