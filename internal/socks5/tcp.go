@@ -241,8 +241,22 @@ func (p *Proxy) handleConnectCmd(target string, tcpIn chan<- *constant.TCPContex
 			ID:      p.id,
 			NetWork: constant.TCP,
 			Type:    constant.SOCKS5,
-			Src:     p.srcAddr(),
-			Dest:    target,
+			Src: func() constant.IP {
+				host, port, _ := net.SplitHostPort(p.srcAddr())
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
+			Dest: func() constant.IP {
+				host, port, _ := net.SplitHostPort(target)
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
 		},
 		PreFn: func() {
 			_, err := p.conn.Write([]byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01})

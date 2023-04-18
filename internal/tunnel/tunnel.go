@@ -2,7 +2,6 @@ package tunnel
 
 import (
 	"crypto/tls"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/smallnest/chanx"
 	"github.com/xmapst/lightsocks/internal/conf"
@@ -12,6 +11,7 @@ import (
 	"github.com/xmapst/lightsocks/internal/statistic"
 	"net"
 	"runtime"
+	"strconv"
 )
 
 var (
@@ -49,19 +49,17 @@ func handleTCPConn(ctx *constant.TCPContext, token string) {
 	// connect to the target
 	target := ctx.Metadata.Dest
 	if conf.App.Mode == conf.ClientMode {
-		target = fmt.Sprintf("%s:%d", conf.App.Server.Host, conf.App.Server.Port)
+		target = constant.IP{
+			Addr: conf.App.Server.Host,
+			Port: conf.App.Server.Port,
+		}
 	}
-	addr, port, err := net.SplitHostPort(target)
+	ip, err := resolver.ResolveIP(target.Addr)
 	if err != nil {
 		logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)
 		return
 	}
-	ip, err := resolver.ResolveIP(addr)
-	if err != nil {
-		logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)
-		return
-	}
-	destAddr := net.JoinHostPort(ip.String(), port)
+	destAddr := net.JoinHostPort(ip.String(), strconv.FormatInt(target.Port, 10))
 	var destConn net.Conn
 	if conf.App.TLS.Enable && conf.App.Mode == conf.ClientMode {
 		destConn, err = tls.DialWithDialer(&dial, "tcp", destAddr, conf.App.TLSConf)
@@ -79,7 +77,7 @@ func handleTCPConn(ctx *constant.TCPContext, token string) {
 	// 发送被代理的信息
 	if conf.App.Mode == conf.ClientMode {
 		destSecConn := &N.SecureTCPConn{ReadWriteCloser: destConn}
-		_, err = destSecConn.EncodeWrite([]byte(token), []byte(ctx.Metadata.Dest))
+		_, err = destSecConn.EncodeWrite([]byte(token), []byte(ctx.Metadata.Dest.String()))
 		if err != nil {
 			logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)
 			return

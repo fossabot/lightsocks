@@ -3,6 +3,8 @@ package constant
 import (
 	"encoding/json"
 	"github.com/gofrs/uuid"
+	"net"
+	"strconv"
 )
 
 type NetWork int
@@ -43,6 +45,15 @@ type Metadata struct {
 	ID      uuid.UUID `json:"-"`
 	NetWork NetWork   `json:"network"`
 	Type    Type      `json:"type"`
-	Src     string    `json:"src"`
-	Dest    string    `json:"dest"`
+	Src     IP        `json:"src"`
+	Dest    IP        `json:"dest"`
+}
+
+type IP struct {
+	Addr string `json:"addr"`
+	Port int64  `json:"port"`
+}
+
+func (i IP) String() string {
+	return net.JoinHostPort(i.Addr, strconv.FormatInt(i.Port, 10))
 }

@@ -47,7 +47,7 @@ type TLS struct {
 
 type Server struct {
 	Host  string `yaml:""`
-	Port  int    `yaml:""`
+	Port  int64  `yaml:""`
 	Token string `yaml:""`
 }
 

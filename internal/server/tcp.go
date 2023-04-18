@@ -14,6 +14,7 @@ import (
 	"github.com/xmapst/lightsocks/internal/protocol"
 	"github.com/xmapst/lightsocks/internal/tunnel"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -129,8 +130,22 @@ func (l *Listener) handle(srcConn net.Conn, tcpIn chan<- *constant.TCPContext) {
 			ID:      id,
 			NetWork: constant.TCP,
 			Type:    constant.SOCKS5,
-			Src:     srcConn.RemoteAddr().String(),
-			Dest:    destAddr,
+			Src: func() constant.IP {
+				host, port, _ := net.SplitHostPort(srcConn.RemoteAddr().String())
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
+			Dest: func() constant.IP {
+				host, port, _ := net.SplitHostPort(destAddr)
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
 		},
 		PostFn: func() {
 			l.wg.Done()

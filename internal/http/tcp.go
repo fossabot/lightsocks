@@ -175,8 +175,22 @@ func (p *Proxy) handleHTTPConnectMethod(addr string, port uint16, tcpIn chan<- *
 			ID:      p.id,
 			NetWork: constant.TCP,
 			Type:    constant.HTTPCONNECT,
-			Src:     p.srcAddr(),
-			Dest:    target,
+			Src: func() constant.IP {
+				host, port, _ := net.SplitHostPort(p.srcAddr())
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
+			Dest: func() constant.IP {
+				host, port, _ := net.SplitHostPort(target)
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
 		},
 		PreFn: p.httpWriteProxyHeader,
 		PostFn: func() {
@@ -196,8 +210,22 @@ func (p *Proxy) handleHTTPProxy(addr string, port uint16, line string, tcpIn cha
 			ID:      p.id,
 			NetWork: constant.TCP,
 			Type:    constant.HTTP,
-			Src:     p.srcAddr(),
-			Dest:    target,
+			Src: func() constant.IP {
+				host, port, _ := net.SplitHostPort(p.srcAddr())
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
+			Dest: func() constant.IP {
+				host, port, _ := net.SplitHostPort(target)
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
 		},
 		Line: line,
 		PostFn: func() {

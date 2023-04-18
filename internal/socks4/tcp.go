@@ -10,6 +10,7 @@ import (
 	"github.com/xmapst/lightsocks/internal/constant"
 	"io"
 	"net"
+	"strconv"
 	"sync"
 )
 
@@ -126,8 +127,22 @@ func (p *Proxy) processRequest(target string, tcpIn chan<- *constant.TCPContext)
 			ID:      p.id,
 			NetWork: constant.TCP,
 			Type:    constant.SOCKS4,
-			Src:     p.srcAddr(),
-			Dest:    target,
+			Src: func() constant.IP {
+				host, port, _ := net.SplitHostPort(p.srcAddr())
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
+			Dest: func() constant.IP {
+				host, port, _ := net.SplitHostPort(target)
+				_port, _ := strconv.ParseInt(port, 10, 64)
+				return constant.IP{
+					Addr: host,
+					Port: _port,
+				}
+			}(),
 		},
 		PreFn: func() {
 			_, err := p.conn.Write([]byte{0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0})
