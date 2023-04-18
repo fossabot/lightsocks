@@ -223,7 +223,6 @@ func (p *Proxy) processRequest(tcpIn chan<- *constant.TCPContext) error {
 
 	// target address
 	target := net.JoinHostPort(host, fmt.Sprintf("%d", port))
-	logrus.Infoln(p.id, p.srcAddr(), cmdMap[buf[1]])
 	// command support connect
 	switch buf[1] {
 	case CmdUdp:

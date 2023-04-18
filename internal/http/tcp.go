@@ -99,7 +99,6 @@ func (p *Proxy) processRequest(lines []string, tcpIn chan<- *constant.TCPContext
 	method := requestLine[0]
 	requestTarget := requestLine[1]
 	version := requestLine[2]
-	logrus.Infoln(p.id, p.srcAddr(), method)
 	var err error
 	if method == HTTPCONNECT {
 		shp := strings.Split(requestTarget, ":")

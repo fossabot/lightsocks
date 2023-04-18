@@ -54,6 +54,7 @@ func Server(conf conf.Server) {
 		r.Get("/", hello)
 		r.Get("/traffic", traffic)
 		r.Mount("/connections", connectionRouter())
+		r.Mount("/dns", dnsRouter())
 	})
 
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", conf.Host, conf.Port))

@@ -8,6 +8,7 @@ import (
 	"github.com/xmapst/lightsocks/internal/conf"
 	"github.com/xmapst/lightsocks/internal/constant"
 	N "github.com/xmapst/lightsocks/internal/net"
+	"github.com/xmapst/lightsocks/internal/resolver"
 	"github.com/xmapst/lightsocks/internal/statistic"
 	"net"
 	"runtime"
@@ -50,17 +51,22 @@ func handleTCPConn(ctx *constant.TCPContext, token string) {
 	if conf.App.Mode == conf.ClientMode {
 		target = fmt.Sprintf("%s:%d", conf.App.Server.Host, conf.App.Server.Port)
 	}
-
-	destAddr, err := net.ResolveTCPAddr("tcp", target)
+	addr, port, err := net.SplitHostPort(target)
 	if err != nil {
 		logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)
 		return
 	}
+	ip, err := resolver.ResolveIP(addr)
+	if err != nil {
+		logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)
+		return
+	}
+	destAddr := net.JoinHostPort(ip.String(), port)
 	var destConn net.Conn
 	if conf.App.TLS.Enable && conf.App.Mode == conf.ClientMode {
-		destConn, err = tls.DialWithDialer(&dial, "tcp", destAddr.String(), conf.App.TLSConf)
+		destConn, err = tls.DialWithDialer(&dial, "tcp", destAddr, conf.App.TLSConf)
 	} else {
-		destConn, err = dial.Dial("tcp", destAddr.String())
+		destConn, err = dial.Dial("tcp", destAddr)
 	}
 	if err != nil {
 		logrus.Errorln(ctx.Metadata.ID, ctx.Metadata.Src, "-->", ctx.Metadata.Dest, err)

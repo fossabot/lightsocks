@@ -6,7 +6,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xmapst/lightsocks/internal/api"
 	"github.com/xmapst/lightsocks/internal/conf"
+	"github.com/xmapst/lightsocks/internal/dns"
 	"github.com/xmapst/lightsocks/internal/mixed"
+	"github.com/xmapst/lightsocks/internal/resolver"
 	"github.com/xmapst/lightsocks/internal/server"
 	"github.com/xmapst/lightsocks/internal/tunnel"
 	"os"
@@ -107,6 +109,42 @@ func init() {
 	registerSignalHandlers()
 	cmd.PersistentFlags().StringVarP(&conf.Path, "config", "c", "config.yaml", "config file path")
 	cmd.AddCommand(serverCmd, clientCmd)
+	resolver.DefaultResolver = dns.NewResolver(dns.Config{
+		NameServers: []dns.NameServer{
+			{
+				Net:  "tcp",
+				Addr: "119.29.29.29:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "119.28.28.28:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "223.5.5.5:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "223.6.6.6:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "1.0.0.1:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "1.1.1.1:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "8.8.8.8:53",
+			},
+			{
+				Net:  "tcp",
+				Addr: "8.8.4.4:53",
+			},
+		},
+	})
 }
 
 func main() {
