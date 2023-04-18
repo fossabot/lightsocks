@@ -1,4 +1,6 @@
 # LightSocks
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fxmapst%2Flightsocks.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fxmapst%2Flightsocks?ref=badge_shield)
+
 support socks4, socks4a, socks5, socks5h, http proxy all in one
 
 ## Help
@@ -46,3 +48,6 @@ see `server.yaml` and `client.yaml` configure
 sitsed ./lightsocks server -c example/server.yaml 
 sitsed ./lightsocks client -c example/client.yaml
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fxmapst%2Flightsocks.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fxmapst%2Flightsocks?ref=badge_large)
